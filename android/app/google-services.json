@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "520528366358",
+    "firebase_url": "https://unime3-5d960.firebaseio.com",
+    "project_id": "unime3-5d960",
+    "storage_bucket": "unime3-5d960.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520528366358:android:c1ca012486fa10f74d5e37",
+        "android_client_info": {
+          "package_name": "com.example.unime3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "520528366358-928st2g4j0o6v1uo7diadg1k1mp1vlmq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZ3SW-TwuS885D1d23WEz8sL2uU3gj_NE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "520528366358-928st2g4j0o6v1uo7diadg1k1mp1vlmq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
