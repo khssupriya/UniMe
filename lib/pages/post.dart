@@ -20,10 +20,7 @@ class _PostState extends State<Post> {
     print(this.title);
     print(this.shortDes); 
 
-    DocumentReference documentReference = 
-          Firestore.instance.collection("events").document(this.email);
-
-    Map<String, dynamic> event = {
+    Firestore.instance.collection("events").add({
       'Title': this.title,
       'Short Description': this.shortDes,
       'College Name': this.clgName,
@@ -31,9 +28,7 @@ class _PostState extends State<Post> {
       'Link': this.link,
       'Email Address': this.email,
       'Phone Number': this.phone,
-    };
-
-    documentReference.setData(event).whenComplete((){
+    }).whenComplete((){
       print("$title created");
     });
 
