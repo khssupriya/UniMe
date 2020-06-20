@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Each extends StatefulWidget {
-  Each({Key key, this.title}) : super(key: key);
+  Each({Key key, this.title, this.documentSnapshot}) : super(key: key);
 
   final String title;
+  final DocumentSnapshot documentSnapshot;
 
   @override
-  _EachState createState() => _EachState();
+  _EachState createState() => _EachState(documentSnapshot: documentSnapshot,);
 }
 
 class _EachState extends State<Each> {
+
+  _EachState({this.documentSnapshot});
+
+  final DocumentSnapshot documentSnapshot;  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +33,7 @@ class _EachState extends State<Each> {
             children: <Widget>[
             SizedBox(height: 20.0,),
             Text(
-              'Mummies for Dummies',
+              this.documentSnapshot['Title'],
               style: TextStyle(
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
@@ -34,13 +41,7 @@ class _EachState extends State<Each> {
             ),
             SizedBox(height: 20.0,) ,
             Text(
-              'Hey there, IIT Kaulalampur is here again with an other exclusive competitive coding contest.. Hope into the journey and code along absjfbs fsgnds gdhdlghkgdn.',
-              style: TextStyle(
-                fontSize: 20.0,
-              ),
-            ),
-            Text(
-              'this is the additional info i would add to fill the page.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ',
+              this.documentSnapshot['Short Description'],
               style: TextStyle(
                 fontSize: 20.0,
               ),
@@ -57,7 +58,7 @@ class _EachState extends State<Each> {
                 ),
                 SizedBox(width: 10.0,) ,
                 Text(
-                  '12-12-12',
+                  this.documentSnapshot['Date'],
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
@@ -115,7 +116,7 @@ class _EachState extends State<Each> {
               ),
               SizedBox(width: 2.0,) ,
               Text(
-                '1234567809',
+                this.documentSnapshot['Phone Number'],
                 style: TextStyle(
                   fontSize: 18.0,
                 ),
@@ -138,7 +139,7 @@ class _EachState extends State<Each> {
               ),
               SizedBox(width: 2.0,) ,
               Text(
-                'dummy@mummy.com',
+                this.documentSnapshot['Email Address'],
                 style: TextStyle(
                   fontSize: 18.0,
                 ),
