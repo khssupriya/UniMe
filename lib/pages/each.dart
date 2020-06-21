@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Each extends StatefulWidget {
   Each({Key key, this.title, this.documentSnapshot}) : super(key: key);
@@ -19,6 +22,9 @@ class _EachState extends State<Each> {
 
   @override
   Widget build(BuildContext context) {
+
+    final GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -50,7 +56,7 @@ class _EachState extends State<Each> {
             Row(
               children: <Widget>[
                 Text(
-                  'Date:',
+                  'Date & Time:',
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
@@ -64,16 +70,26 @@ class _EachState extends State<Each> {
                   ),
                 ),
                 Spacer(),
-                FlatButton(
-                  onPressed: (){},
-                  child: Text(
-                    'Add to Calendar',
-                    style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    ),
+                IconButton(
+                  onPressed: (){
+                    Add2Calendar.addEvent2Cal(
+                      Event(
+                        title: documentSnapshot['Title'],
+                        description: documentSnapshot['Short Description'],
+                        location: 'uni.me app',
+                        startDate: DateFormat('dd-MM-yyy HH:mm').parse(documentSnapshot['Date']),
+                        endDate: DateFormat('dd-MM-yyy HH:mm').parse(documentSnapshot['Date']).add(Duration(days: 1)),
+                        allDay: false,
+                      ),
+                    ).then((success) {
+                      scaffoldState.currentState.showSnackBar(
+                      SnackBar(content: Text(success ? 'Success' : 'Error')));
+                    });
+                  },
+                  icon: Icon(
+                    Icons.calendar_today,
+                    size: 20,
                   ),
-                  color: Colors.blue,
                 ),
               ],
             ),
@@ -81,7 +97,14 @@ class _EachState extends State<Each> {
           Center(
             child: FlatButton(
               color:Colors.red,
-              onPressed: (){},
+              onPressed: () async {
+              const url = 'https://flutter.io';
+              if (await canLaunch(url)) {
+                await launch(url);
+              } else {
+                throw 'Could not launch $url';
+              }
+            },
               child: Text(
                 'Register now',
                 style: TextStyle(

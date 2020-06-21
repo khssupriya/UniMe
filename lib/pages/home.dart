@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                             Text(
-                              documentSnapshot['Date'],
+                              documentSnapshot['Date'].substring(0,10),
                               style: TextStyle(
                                 fontSize: 16.0,
                               ),

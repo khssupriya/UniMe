@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:unime3/items/event.dart';
+import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class Post extends StatefulWidget {
   Post({Key key, this.title}) : super(key: key);
@@ -13,7 +14,7 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
-  String title, shortDes, clgName, date, link, email, phone;
+  String title, shortDes, clgName, datetm, link, email, phone;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -25,7 +26,7 @@ class _PostState extends State<Post> {
       'Title': this.title,
       'Short Description': this.shortDes,
       'College Name': this.clgName,
-      'Date': this.date,
+      'Date': this.datetm,
       'Link': this.link,
       'Email Address': this.email,
       'Phone Number': this.phone,
@@ -109,23 +110,36 @@ class _PostState extends State<Post> {
     return 
     Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
+      child:
+      DateTimeField(
+        format: DateFormat("dd-MM-yyy HH:mm"),
         decoration: InputDecoration(
           labelText: 'Date',
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.blue, width: 2.0),
           ),
         ),
-        validator: (String val) {
-              if(val.isEmpty)return "Data is required";
-              else return null;
-        },
-        keyboardType: TextInputType.text,
-        onSaved: (String val){
-          this.date = val;
+        onShowPicker: (context, currentValue) async {
+          final date = await showDatePicker(
+              context: context,
+              firstDate: DateTime(1900),
+              initialDate: currentValue ?? DateTime.now(),
+              lastDate: DateTime(2100));
+          if (date != null) {
+            final time = await showTimePicker(
+              context: context,
+              initialTime:
+                  TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+            );
+            this.datetm = DateFormat("dd-MM-yyy HH:mm").format(DateTimeField.combine(date,time)).substring(0,16);
+            return DateTimeField.combine(date, time);
+          } else {
+            this.datetm = DateFormat("dd-MM-yyy HH:mm").format(currentValue).substring(0,16);
+            return currentValue;
+          }
         },
       ),
-    );
+    );    
   }
 
    Widget _buildLink(){
