@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:unime3/pages/each.dart';
 import 'dart:math';
+//import 'package:flutter_icons/flutter_icons.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -12,21 +13,57 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+String category;
+
 class _MyHomePageState extends State<MyHomePage> {
+
+  final catergories = {'dance','sports','code','music','literature'};
+  String dropdownValue = 'category';
+  final catIcons = {'dance':Icons.face,'sports':Icons.gamepad,'code':Icons.code,'music':Icons.music_note,'literature':Icons.book,'category':Icons.category};
  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text(widget.title),
+        title: Row(
+          children: <Widget> [
+            Text('uni.me'),
+            Spacer(),
+            DropdownButton(
+              value: dropdownValue,
+              iconSize: 30,
+              items: <String>['dance','sports','code','music','literature','category']
+              .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Row(
+                    children: <Widget>[
+                      Icon(catIcons[value]),
+                      SizedBox(width: 5,),
+                      Text(value,
+                        style: TextStyle(fontSize: 18,color: Colors.black54,),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (String newValue) {
+              setState(() {
+                dropdownValue = newValue;
+                category = newValue;
+              }              
+              );
+            },
+            ),
+          ],
+        ),
       ),
       body: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
       StreamBuilder(
-        stream: Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots(),
+        stream: ('category' != category)?Firestore.instance.collection('events').where('Category', isEqualTo:category).orderBy('_timeStampUTC', descending: true).snapshots():Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots(),
         builder: (context, snapshot){
           //if(snapshot.hasData){
             return Expanded(
@@ -121,7 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 ),
             );
-          //}
+          // }
+          // else return Center(child: Text('Sorry! nothings here'),);
         },
       ),
             ],

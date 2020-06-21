@@ -14,14 +14,12 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
-  String title, shortDes, clgName, datetm, link, email, phone;
+  String title, shortDes, clgName, datetm, link, email, phone, category;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void createData(){
-    print(this.title);
-    print(this.shortDes); 
 
     Firestore.instance.collection("events").add({
       'Title': this.title,
@@ -29,6 +27,7 @@ class _PostState extends State<Post> {
       'College Name': this.clgName,
       'Date': this.datetm,
       'Link': this.link,
+      'Catergory': this.category,
       'Email Address': this.email,
       'Phone Number': this.phone,
       '_timeStampUTC': DateTime.now(),
@@ -167,6 +166,45 @@ class _PostState extends State<Post> {
     );
   }
 
+  String dropdownValue = 'category';
+
+  Widget _buildCategory(){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          DropdownButton<String>(
+            value: dropdownValue,
+            icon: Icon(Icons.arrow_drop_down),
+            iconSize: 30,
+            elevation: 16,
+            style: TextStyle(color: Colors.black54,),
+            underline: Container(
+              height: 1,
+              color: Colors.black54,
+            ),
+            onChanged: (String newValue) {
+              setState(() {
+                dropdownValue = newValue;
+                this.category = newValue;
+              });
+            },
+            items: <String>['category','dance','sports','code','music','literature']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value,
+                  style: TextStyle(fontSize: 18,color: Colors.black54,),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
    Widget _buildEmail(){
     return 
     Padding(
@@ -239,6 +277,8 @@ class _PostState extends State<Post> {
                   _buildLink(),
                   _buildEmail(),
                   _buildPhone(),
+                  SizedBox(height: 5,),
+                  _buildCategory(),
                   SizedBox(height: 80,),
                   RaisedButton(
                     onPressed: (){
