@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
@@ -17,6 +17,7 @@ class _PostState extends State<Post> {
   String title, shortDes, clgName, datetm, link, email, phone;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void createData(){
     print(this.title);
@@ -30,6 +31,7 @@ class _PostState extends State<Post> {
       'Link': this.link,
       'Email Address': this.email,
       'Phone Number': this.phone,
+      '_timeStampUTC': DateTime.now(),
     }).whenComplete((){
       print("$title created");
     });
@@ -216,6 +218,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       key: _scaffoldKey,  
        appBar: AppBar(
         centerTitle: true,
         title: Text(widget.title),
@@ -240,9 +243,13 @@ class _PostState extends State<Post> {
                   RaisedButton(
                     onPressed: (){
                       if (!_formKey.currentState.validate())return;
-                      _formKey.currentState.save();
-                       
+                      _formKey.currentState.save();                       
                       createData();
+                      final snackBar = SnackBar(content: Text('Sucessful Post!'));
+                      _scaffoldKey.currentState.showSnackBar(snackBar);    
+                      Future.delayed(const Duration(milliseconds: 800), () {
+                        Navigator.pop(context);
+                      });
                     },
                     child: Text(
                       'Submit',

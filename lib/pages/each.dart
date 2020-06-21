@@ -96,9 +96,9 @@ class _EachState extends State<Each> {
           SizedBox(height: 20,),
           Center(
             child: FlatButton(
-              color:Colors.red,
+              color:Colors.blue,
               onPressed: () async {
-              const url = 'https://flutter.io';
+              final url = documentSnapshot['Link'];
               if (await canLaunch(url)) {
                 await launch(url);
               } else {

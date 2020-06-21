@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:unime3/pages/each.dart';
+import 'dart:math';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -25,9 +26,9 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
       StreamBuilder(
-        stream: Firestore.instance.collection('events').snapshots(),
+        stream: Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots(),
         builder: (context, snapshot){
-          if(snapshot.hasData){
+          //if(snapshot.hasData){
             return Expanded(
                           child: ListView.builder(
                 shrinkWrap: true,
@@ -48,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         SizedBox(height: 10.0,) ,
                         Text(
-                          documentSnapshot['Short Description'],
+                          documentSnapshot['Short Description'].substring(0,min(documentSnapshot['Short Description'].toString().length, 200)) + '...',
                           style: TextStyle(
                             fontSize: 16.0,
                           ),
@@ -56,18 +57,46 @@ class _MyHomePageState extends State<MyHomePage> {
                         SizedBox(height: 10.0,) ,
                         Row(
                           children: <Widget>[
-                            Text(
-                              'Date:',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              documentSnapshot['Date'].substring(0,10),
-                              style: TextStyle(
-                                fontSize: 16.0,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Date:',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      documentSnapshot['Date'].substring(0,10),
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                  ],                                  
+                                ),
+                                SizedBox(height: 8,),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Collge:',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      documentSnapshot['College Name'],
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                  ],                                  
+                                ),
+                              ],
+
                             ),
                             Spacer(),
                             FlatButton(
@@ -92,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 ),
             );
-          }
+          //}
         },
       ),
             ],
