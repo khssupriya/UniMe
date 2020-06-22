@@ -18,7 +18,7 @@ class _EachState extends State<Each> {
 
   _EachState({this.documentSnapshot});
 
-  final DocumentSnapshot documentSnapshot;  
+  DocumentSnapshot documentSnapshot;  
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +27,9 @@ class _EachState extends State<Each> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black87,
         centerTitle: true,
-        title: Text(widget.title),
+        title: Image(image: AssetImage('assests/title.png'), width: 100,),
       ),
       body:
       SingleChildScrollView(
@@ -53,7 +54,24 @@ class _EachState extends State<Each> {
               ),
             ),
             SizedBox(height: 10.0,) ,
-            Row(
+            FlatButton(
+              padding: EdgeInsets.all(0) ,
+              onPressed: (){
+                Add2Calendar.addEvent2Cal(
+                  Event(
+                    title: documentSnapshot['Title'],
+                    description: documentSnapshot['Short Description'],
+                    location: 'uni.me app',
+                    startDate: documentSnapshot['Date'].toDate(),
+                    endDate: documentSnapshot['Date'].toDate().add(Duration(days: 1)),
+                    allDay: false,
+                  ),
+                ).then((success) {
+                  scaffoldState.currentState.showSnackBar(
+                  SnackBar(content: Text(success ? 'Success' : 'Error')));
+                });
+              },
+              child: Row(
               children: <Widget>[
                 Text(
                   'Date & Time:',
@@ -64,34 +82,19 @@ class _EachState extends State<Each> {
                 ),
                 SizedBox(width: 10.0,) ,
                 Text(
-                  this.documentSnapshot['Date'],
+                  DateFormat("dd-MM-yyy HH:mm").format(this.documentSnapshot['Date'].toDate(),).substring(0,16),
                   style: TextStyle(
                     fontSize: 20.0,
                   ),
                 ),
                 Spacer(),
-                IconButton(
-                  onPressed: (){
-                    Add2Calendar.addEvent2Cal(
-                      Event(
-                        title: documentSnapshot['Title'],
-                        description: documentSnapshot['Short Description'],
-                        location: 'uni.me app',
-                        startDate: DateFormat('dd-MM-yyy HH:mm').parse(documentSnapshot['Date']),
-                        endDate: DateFormat('dd-MM-yyy HH:mm').parse(documentSnapshot['Date']).add(Duration(days: 1)),
-                        allDay: false,
-                      ),
-                    ).then((success) {
-                      scaffoldState.currentState.showSnackBar(
-                      SnackBar(content: Text(success ? 'Success' : 'Error')));
-                    });
-                  },
-                  icon: Icon(
+                Icon(
                     Icons.calendar_today,
-                    size: 20,
+                    size: 30,
                   ),
-                ),
               ],
+            ),
+
             ),
           SizedBox(height: 10,),
           Row(
@@ -115,7 +118,7 @@ class _EachState extends State<Each> {
           SizedBox(height: 20,),
           Center(
             child: FlatButton(
-              color:Colors.blue,
+              color:Colors.redAccent,
               onPressed: () async {
               final url = documentSnapshot['Link'];
               if (await canLaunch(url)) {
@@ -128,69 +131,98 @@ class _EachState extends State<Each> {
                 'Register now',
                 style: TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
                 fontSize: 25,
                 ),
               ),
             ),
           ),
           SizedBox(height: 20,),
-          Text(
-            'Contact Us',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-              ),
-          ),
-          SizedBox(height: 10,),
-          Row(
-            children: <Widget>[
-              RawMaterialButton(
-                onPressed: (){},
-                fillColor: Colors.blue,
-                padding: EdgeInsets.all(10.0),
-                shape: CircleBorder(),
-                child: Icon(
-                Icons.phone,
-                size: 20.0,  
-                color: Colors.white,          
-                ),
-              ),
-              SizedBox(width: 2.0,) ,
-              Text(
-                this.documentSnapshot['Phone Number'],
-                style: TextStyle(
-                  fontSize: 18.0,
-                ),
-              ),
-            ],
-          ),
-           SizedBox(height: 10,),
-          Row(
-            children: <Widget>[
-              RawMaterialButton(
-                onPressed: (){},
-                fillColor: Colors.blue,
-                padding: EdgeInsets.all(10.0),
-                shape: CircleBorder(),
-                child: Icon(
-                Icons.email,
-                size: 20.0,  
-                color: Colors.white,          
-                ),
-              ),
-              SizedBox(width: 2.0,) ,
-              Text(
-                this.documentSnapshot['Email Address'],
-                style: TextStyle(
-                  fontSize: 18.0,
-                ),
-              ),
-            ],
-          ),
         ],
     ),
         ),
+      ),
+      floatingActionButton: Stack(
+              children: <Widget>[
+                 Padding(padding: EdgeInsets.only(right:0),
+                  child: Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                height: 50,
+                child: FloatingActionButton(
+                    heroTag: null,                    
+                    onPressed: () async {
+                      String url = "tel:" + this.documentSnapshot['Phone Number'];   
+                      if (await canLaunch(url)) {
+            await launch(url);
+                      } else {
+          throw 'Could not launch $url';
+                      }
+                    },
+                    backgroundColor: Colors.orangeAccent,
+                    shape: CircleBorder(),
+                    child: Icon(
+                    Icons.phone,
+                    size: 25.0,  
+                    color: Colors.white,          
+                    ),
+                  ),
+              ),
+        ),
+                 ),
+                  Padding(padding: EdgeInsets.fromLTRB(0,31,0,60),
+                  child: Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                height: 50,
+                child: FloatingActionButton(
+                    heroTag: null, 
+                    onPressed: () async{
+                      var url = documentSnapshot['Link'];
+                      if (await canLaunch(url)) {
+            await launch(url);
+                      } else {
+          throw 'Could not launch $url';
+                      }
+                    },
+                    backgroundColor: Colors.orangeAccent,
+                    shape: CircleBorder(),
+                    child: Icon(
+                    Icons.home,
+                    size: 25.0,  
+                    color: Colors.white,          
+                    ),
+                  ),
+              ),
+        ),
+                 ),
+                  Padding(padding: EdgeInsets.fromLTRB(0,31,0,120),
+                  child: Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                height: 50,
+                child: FloatingActionButton(
+                    heroTag: null, 
+                    onPressed: () async{
+                      var url = "mailto:" + documentSnapshot['Email Address'];
+                      if (await canLaunch(url)) {
+            await launch(url);
+                      } else {
+          throw 'Could not launch $url';
+                      }
+                    },
+                    backgroundColor: Colors.orangeAccent,
+                    shape: CircleBorder(),
+                    child: Icon(
+                    Icons.email,
+                    size: 25.0,  
+                    color: Colors.white,          
+                    ),
+                  ),
+              ),
+        ),
+                 ),
+
+              ],
       ),
     );
   }

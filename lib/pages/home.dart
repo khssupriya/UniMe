@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:unime3/pages/each.dart';
 import 'dart:math';
+import 'package:intl/intl.dart';
 //import 'package:flutter_icons/flutter_icons.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -20,17 +21,19 @@ class _MyHomePageState extends State<MyHomePage> {
   final catergories = {'dance','sports','code','music','literature'};
   String dropdownValue = 'category';
   final catIcons = {'dance':Icons.face,'sports':Icons.gamepad,'code':Icons.code,'music':Icons.music_note,'literature':Icons.book,'category':Icons.category};
- 
+  final catColors = {'dance':Colors.amber,'sports':Colors.pinkAccent,'code':Colors.green,'music':Colors.redAccent,'literature':Colors.teal,'category':Colors.orangeAccent};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black87,
         title: Row(
           children: <Widget> [
-            Text('uni.me'),
+            Image(image: AssetImage('assests/title.png'), width: 100,),
             Spacer(),
             DropdownButton(
               value: dropdownValue,
+              dropdownColor: Colors.black87,
               iconSize: 30,
               items: <String>['dance','sports','code','music','literature','category']
               .map<DropdownMenuItem<String>>((String value) {
@@ -38,10 +41,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   value: value,
                   child: Row(
                     children: <Widget>[
-                      Icon(catIcons[value]),
+                      Icon(catIcons[value],color: catColors[value],),
                       SizedBox(width: 5,),
                       Text(value,
-                        style: TextStyle(fontSize: 18,color: Colors.black54,),
+                        style: TextStyle(fontSize: 18,color: Colors.white,),
                       ),
                     ],
                   ),
@@ -72,7 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index){
                   DocumentSnapshot documentSnapshot = snapshot.data.documents[index];
+                  if(documentSnapshot['Date'].toDate().compareTo(DateTime.now()) <= 0)Firestore.instance.collection('events').document(documentSnapshot.documentID).delete();
                   return Card(
+                    //color: Colors.black26,
                     child: Padding (
                       padding: EdgeInsets.all(20.0),
                       child:Column(
@@ -104,10 +109,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
+                                        letterSpacing: 1,
                                       ),
                                     ),
                                     Text(
-                                      documentSnapshot['Date'].substring(0,10),
+                                      DateFormat("dd-MM-yyy HH:mm").format(documentSnapshot['Date'].toDate()).substring(0,16).substring(0,10),
                                       style: TextStyle(
                                         fontSize: 16.0,
                                       ),
@@ -118,10 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Row(
                                   children: <Widget>[
                                     Text(
-                                      'Collge:',
+                                      'College:',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
+                                        letterSpacing: 1,
                                       ),
                                     ),
                                     Text(
@@ -146,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                              color: Colors.blue, 
+                              color: Colors.orangeAccent, 
                             ),
                           ],
                         ),
@@ -170,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.pushNamed(context, '/post');
         },
         child: Icon(Icons.add),
+        backgroundColor: Colors.redAccent
       ),
     );
   }

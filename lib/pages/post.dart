@@ -14,7 +14,8 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
-  String title, shortDes, clgName, datetm, link, email, phone, category;
+  String title, shortDes, clgName, link, email, phone, category;
+  DateTime datetm;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -132,10 +133,10 @@ class _PostState extends State<Post> {
               initialTime:
                   TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
             );
-            this.datetm = DateFormat("dd-MM-yyy HH:mm").format(DateTimeField.combine(date,time)).substring(0,16);
+            this.datetm = DateTimeField.combine(date,time);
             return DateTimeField.combine(date, time);
           } else {
-            this.datetm = DateFormat("dd-MM-yyy HH:mm").format(currentValue).substring(0,16);
+            this.datetm =currentValue;
             return currentValue;
           }
         },
@@ -258,8 +259,9 @@ class _PostState extends State<Post> {
     return Scaffold(
        key: _scaffoldKey,  
        appBar: AppBar(
+        backgroundColor: Colors.black87,
         centerTitle: true,
-        title: Text(widget.title),
+        title: Image(image: AssetImage('assests/title.png'), width: 100,),
       ),
       body:SingleChildScrollView(
           child:Form(
@@ -295,7 +297,7 @@ class _PostState extends State<Post> {
                       'Submit',
                       style: TextStyle(color: Colors.white,fontSize: 16),
                       ),
-                      color: Colors.blue,
+                      color: Colors.redAccent,
                     ),
                 ],
               ),
