@@ -14,7 +14,7 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
-  String title, shortDes, clgName, link, email, phone, category;
+  String title, shortDes, clgName, link, email, phone, category, fee;
   DateTime datetm;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -32,10 +32,33 @@ class _PostState extends State<Post> {
       'Email Address': this.email,
       'Phone Number': this.phone,
       '_timeStampUTC': DateTime.now(),
+      'Fee': this.fee,
     }).whenComplete((){
       print("$title created");
     });
+  }
 
+  Widget _buildFee(){
+    return 
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: 'Fee',
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          ),
+        ),
+        validator: (String val) {
+              if(val.isEmpty)return "Fee is required";
+              else return null;
+        },
+        keyboardType: TextInputType.text,
+        onSaved: (String val){
+          this.fee = val;
+        },
+      ),
+    );
   }
 
   Widget _buildTitle(){
@@ -276,6 +299,7 @@ class _PostState extends State<Post> {
                   _buildShortDes(),
                   _buildClgName(),
                   _buildDate(),
+                  _buildFee(),
                   _buildLink(),
                   _buildEmail(),
                   _buildPhone(),

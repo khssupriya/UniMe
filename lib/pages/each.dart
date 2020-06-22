@@ -116,6 +116,25 @@ class _EachState extends State<Each> {
             ],
           ),
           SizedBox(height: 20,),
+          Row(
+            children: <Widget>[
+              Text(
+                'Fee:',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 10.0,) ,
+              Text(
+                this.documentSnapshot['Fee'],
+                style: TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20,),
           Center(
             child: FlatButton(
               color:Colors.redAccent,
