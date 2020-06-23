@@ -20,28 +20,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Set colleges = new  Set();
 
-  Future<void> addData() async{
-    await Firestore.instance.collection('events').getDocuments().then((querySnapshot) {
-      querySnapshot.documents.forEach((result) async{
-        await Firestore.instance.collection('events').document(result.documentID).get().then((value){
-          //print('hello');
+  Future<void> loadData(){
+    colleges.add('college');
+    Firestore.instance.collection('events').getDocuments().then((querySnapshot){
+      querySnapshot.documents.forEach((result){
+        Firestore.instance.collection('events').document(result.documentID).get().then((value){
           colleges.add(value.data['College Name']);
-          //print(value.data['College Name']);
           print(colleges);
+          setState(() {
+            
+          });
         });
       });
-    }).whenComplete(() =>     
-    setState(() {
-      print("State set");      
-    }),
-    );
+    });
     return null;
-  }
-
-  void loadData() async {
-    colleges.add('college');
-    await addData();
-    print(colleges);
   }
 
   _MyHomePageState(){
@@ -62,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget> [
             Image(image: AssetImage('assests/title.png'), width: 100,),
             Spacer(),
-            DropdownButton(
+            DropdownButton( 
               value: dropdownValueclg,
               dropdownColor: Colors.black87,
               iconSize: 30,
@@ -121,10 +113,10 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
       StreamBuilder(
-        stream: ('category' != category && 'college'!= myCollege)?Firestore.instance.collection('events').where('Category', isEqualTo:category).where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
-        ('college'!= myCollege)?Firestore.instance.collection('events').where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
-        ('category' != category)?Firestore.instance.collection('events').where('Category', isEqualTo:category).orderBy('_timeStampUTC', descending: true).snapshots():
-        Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots(),
+        stream: (('category' != category && 'college'!= myCollege)?Firestore.instance.collection('events').where('Category', isEqualTo:category).where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
+        (('college'!= myCollege)?Firestore.instance.collection('events').where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
+        (('category' != category)?Firestore.instance.collection('events').where('Category', isEqualTo:category).orderBy('_timeStampUTC', descending: true).snapshots():
+        Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots()))),
         builder: (context, snapshot){
           //if(snapshot.hasData){
             return Expanded(
@@ -224,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
             );
           // }
-          // else return Center(child: Text('Sorry! nothings here'),);
+          // else{ print("im here");return Center(child: Text('Sorry! nothings here'),);}
         },
       ),
             ],
