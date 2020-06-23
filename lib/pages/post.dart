@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:image_picker/image_picker.dart';
 
 class Post extends StatefulWidget {
-  Post({Key key, this.title}) : super(key: key);
-
-  final String title;
+  Post({Key key}) : super(key: key);
 
   @override
   _PostState createState() => _PostState();
@@ -15,7 +15,7 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
 
   String title, shortDes, clgName, link, email, phone, category, fee;
-  DateTime datetm;
+  DateTime datetm,  deleteDate;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -28,11 +28,12 @@ class _PostState extends State<Post> {
       'College Name': this.clgName,
       'Date': this.datetm,
       'Link': this.link,
-      'Catergory': this.category,
+      'Category': this.category,
       'Email Address': this.email,
       'Phone Number': this.phone,
       '_timeStampUTC': DateTime.now(),
       'Fee': this.fee,
+      'DeleteDate': this.deleteDate,
     }).whenComplete((){
       print("$title created");
     });
@@ -139,7 +140,7 @@ class _PostState extends State<Post> {
       DateTimeField(
         format: DateFormat("dd-MM-yyy HH:mm"),
         decoration: InputDecoration(
-          labelText: 'Date',
+          labelText: 'Date of Event',
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.blue, width: 2.0),
           ),
@@ -160,6 +161,42 @@ class _PostState extends State<Post> {
             return DateTimeField.combine(date, time);
           } else {
             this.datetm =currentValue;
+            return currentValue;
+          }
+        },
+      ),
+    );    
+  }
+
+  Widget _buildDeleteDate(){
+    return 
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child:
+      DateTimeField(
+        format: DateFormat("dd-MM-yyy HH:mm"),
+        decoration: InputDecoration(
+          labelText: 'Delete Post On',
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          ),
+        ),
+        onShowPicker: (context, currentValue) async {
+          final date = await showDatePicker(
+              context: context,
+              firstDate: DateTime(1900),
+              initialDate: currentValue ?? DateTime.now(),
+              lastDate: DateTime(2100));
+          if (date != null) {
+            final time = await showTimePicker(
+              context: context,
+              initialTime:
+                  TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+            );
+            this.deleteDate = DateTimeField.combine(date,time);
+            return DateTimeField.combine(date, time);
+          } else {
+            this.deleteDate = currentValue;
             return currentValue;
           }
         },
@@ -287,45 +324,56 @@ class _PostState extends State<Post> {
         title: Image(image: AssetImage('assests/title.png'), width: 100,),
       ),
       body:SingleChildScrollView(
-          child:Form(
-            key: _formKey,
-            child:Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child:Column(
                 children: <Widget>[
-                  SizedBox(height: 40,),
-                  _buildTitle(),
-                  _buildShortDes(),
-                  _buildClgName(),
-                  _buildDate(),
-                  _buildFee(),
-                  _buildLink(),
-                  _buildEmail(),
-                  _buildPhone(),
-                  SizedBox(height: 5,),
-                  _buildCategory(),
-                  SizedBox(height: 80,),
-                  RaisedButton(
-                    onPressed: (){
-                      if (!_formKey.currentState.validate())return;
-                      _formKey.currentState.save();                       
-                      createData();
-                      final snackBar = SnackBar(content: Text('Sucessful Post!'));
-                      _scaffoldKey.currentState.showSnackBar(snackBar);    
-                      Future.delayed(const Duration(milliseconds: 800), () {
-                        Navigator.pop(context);
-                      });
-                    },
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(color: Colors.white,fontSize: 16),
-                      ),
-                      color: Colors.redAccent,
-                    ),
-                ],
+                  SizedBox(height: 20,),
+              Text('New Post',
+                style: TextStyle(
+                  fontSize: 20,
+                ),          
               ),
-            ),
+              Form(
+                key: _formKey,
+                child:Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 20,),
+                      _buildTitle(),
+                      _buildShortDes(),
+                      _buildClgName(),
+                      _buildDate(),
+                      _buildDeleteDate(),
+                      _buildFee(),
+                      _buildLink(),
+                      _buildEmail(),
+                      _buildPhone(),
+                      SizedBox(height: 5,),
+                      _buildCategory(),
+                      SizedBox(height: 80,),
+                      RaisedButton(
+                        onPressed: (){
+                          if (!_formKey.currentState.validate())return;
+                          _formKey.currentState.save();                       
+                          createData();
+                          final snackBar = SnackBar(content: Text('Sucessful Post!'));
+                          _scaffoldKey.currentState.showSnackBar(snackBar);    
+                          Future.delayed(const Duration(milliseconds: 800), () {
+                            Navigator.pop(context);
+                          });
+                        },
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white,fontSize: 16),
+                          ),
+                          color: Colors.redAccent,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );

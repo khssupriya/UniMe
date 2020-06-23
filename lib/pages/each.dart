@@ -5,9 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Each extends StatefulWidget {
-  Each({Key key, this.title, this.documentSnapshot}) : super(key: key);
+  Each({Key key, this.documentSnapshot}) : super(key: key);
 
-  final String title;
   final DocumentSnapshot documentSnapshot;
 
   @override

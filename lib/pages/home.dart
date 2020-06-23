@@ -6,20 +6,51 @@ import 'package:intl/intl.dart';
 //import 'package:flutter_icons/flutter_icons.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.myCollege}) : super(key: key);
 
-  final String title;
+  final String myCollege;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-String category;
+String category, myCollege;
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  Set colleges = new  Set();
+
+  Future<void> addData() async{
+    await Firestore.instance.collection('events').getDocuments().then((querySnapshot) {
+      querySnapshot.documents.forEach((result) async{
+        await Firestore.instance.collection('events').document(result.documentID).get().then((value){
+          //print('hello');
+          colleges.add(value.data['College Name']);
+          //print(value.data['College Name']);
+          print(colleges);
+        });
+      });
+    }).whenComplete(() =>     
+    setState(() {
+      print("State set");      
+    }),
+    );
+    return null;
+  }
+
+  void loadData() async {
+    colleges.add('college');
+    await addData();
+    print(colleges);
+  }
+
+  _MyHomePageState(){
+    loadData();
+  }
+  
   final catergories = {'dance','sports','code','music','literature'};
   String dropdownValue = 'category';
+  String dropdownValueclg = 'college';
   final catIcons = {'dance':Icons.face,'sports':Icons.gamepad,'code':Icons.code,'music':Icons.music_note,'literature':Icons.book,'category':Icons.category};
   final catColors = {'dance':Colors.amber,'sports':Colors.pinkAccent,'code':Colors.green,'music':Colors.redAccent,'literature':Colors.teal,'category':Colors.orangeAccent};
   @override
@@ -32,10 +63,32 @@ class _MyHomePageState extends State<MyHomePage> {
             Image(image: AssetImage('assests/title.png'), width: 100,),
             Spacer(),
             DropdownButton(
+              value: dropdownValueclg,
+              dropdownColor: Colors.black87,
+              iconSize: 30,
+              items: colleges
+              .map<DropdownMenuItem<String>>((value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child:Text(value,
+                        style: TextStyle(fontSize: 18,color: Colors.white,),
+                      ),
+                );
+              }).toList(),
+              onChanged: (String newValue) {
+              setState(() {
+                dropdownValueclg = newValue;
+                myCollege = newValue;
+                print(myCollege);
+              }              
+              );
+            },
+            ),
+            DropdownButton(
               value: dropdownValue,
               dropdownColor: Colors.black87,
               iconSize: 30,
-              items: <String>['dance','sports','code','music','literature','category']
+              items: <String>['category','dance','sports','code','music','literature']
               .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -54,10 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 dropdownValue = newValue;
                 category = newValue;
+                print(category);
               }              
               );
             },
             ),
+            
           ],
         ),
       ),
@@ -66,7 +121,10 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
       StreamBuilder(
-        stream: ('category' != category)?Firestore.instance.collection('events').where('Category', isEqualTo:category).orderBy('_timeStampUTC', descending: true).snapshots():Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots(),
+        stream: ('category' != category && 'college'!= myCollege)?Firestore.instance.collection('events').where('Category', isEqualTo:category).where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
+        ('college'!= myCollege)?Firestore.instance.collection('events').where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
+        ('category' != category)?Firestore.instance.collection('events').where('Category', isEqualTo:category).orderBy('_timeStampUTC', descending: true).snapshots():
+        Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots(),
         builder: (context, snapshot){
           //if(snapshot.hasData){
             return Expanded(
@@ -75,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index){
                   DocumentSnapshot documentSnapshot = snapshot.data.documents[index];
-                  if(documentSnapshot['Date'].toDate().compareTo(DateTime.now()) <= 0)Firestore.instance.collection('events').document(documentSnapshot.documentID).delete();
+                  if(documentSnapshot['Date'].toDate().compareTo(documentSnapshot['DeleteDate'].toDate()) <= 0)Firestore.instance.collection('events').document(documentSnapshot.documentID).delete();
                   return Card(
                     //color: Colors.black26,
                     child: Padding (
@@ -145,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Spacer(),
                             FlatButton(
                               onPressed: (){
-                               Navigator.push(context, MaterialPageRoute(builder: (context) => Each(title: widget.title, documentSnapshot: documentSnapshot,)));
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => Each(documentSnapshot: documentSnapshot,)));
                               },
                               child: Text('Know More',
                                         style: TextStyle(
