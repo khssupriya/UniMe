@@ -351,10 +351,6 @@ class _PostState extends State<Post> {
             borderSide: BorderSide(color: Colors.blue, width: 2.0),
           ),
         ),
-        validator: (String val) {
-              if(val.isEmpty)return "Phone Number is required";
-              else return null;
-        },
         keyboardType: TextInputType.phone,
         onSaved: (String val){
           this.phone = val;
