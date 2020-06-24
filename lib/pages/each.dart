@@ -87,10 +87,33 @@ class _EachState extends State<Each> {
                   ),
                 ),
                 Spacer(),
-                Icon(
-                    Icons.calendar_today,
-                    size: 30,
+                RaisedButton(
+                  onPressed: (){
+                    Add2Calendar.addEvent2Cal(
+                      Event(
+                        title: documentSnapshot['Title'],
+                        description: documentSnapshot['Short Description'],
+                        location: 'uni.me app',
+                        startDate: documentSnapshot['Date'].toDate(),
+                        endDate: documentSnapshot['Date'].toDate().add(Duration(days: 1)),
+                        allDay: false,
+                      ),
+                    ).then((success) {
+                      scaffoldState.currentState.showSnackBar(
+                      SnackBar(content: Text(success ? 'Success' : 'Error')));
+                    });
+                  },
+                  color: Colors.blue[100],
+                    shape: CircleBorder( ),
+                  child:Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.calendar_today,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                   ),
+                ),
               ],
             ),
 
@@ -188,32 +211,6 @@ class _EachState extends State<Each> {
         ),
                  ),
                   Padding(padding: EdgeInsets.fromLTRB(0,31,0,60),
-                  child: Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                height: 50,
-                child: FloatingActionButton(
-                    heroTag: null, 
-                    onPressed: () async{
-                      var url = documentSnapshot['Link'];
-                      if (await canLaunch(url)) {
-            await launch(url);
-                      } else {
-          throw 'Could not launch $url';
-                      }
-                    },
-                    backgroundColor: Colors.orangeAccent,
-                    shape: CircleBorder(),
-                    child: Icon(
-                    Icons.home,
-                    size: 25.0,  
-                    color: Colors.white,          
-                    ),
-                  ),
-              ),
-        ),
-                 ),
-                  Padding(padding: EdgeInsets.fromLTRB(0,31,0,120),
                   child: Align(
               alignment: Alignment.bottomRight,
               child: Container(

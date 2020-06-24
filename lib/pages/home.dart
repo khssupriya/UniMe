@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Colors.black87,
         title: Row(
+          //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget> [
             Image(image: AssetImage('assests/title.png'), width: 100,),
             Spacer(),
@@ -62,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
               .map<DropdownMenuItem<String>>((value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child:Text(value,
+                  child:Text(value.substring(0,min(value.toString().length,15)),
                         style: TextStyle(fontSize: 18,color: Colors.white,),
                       ),
                 );
@@ -113,18 +114,26 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
       StreamBuilder(
-        stream: (('category' != category && 'college'!= myCollege)?Firestore.instance.collection('events').where('Category', isEqualTo:category).where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
-        (('college'!= myCollege)?Firestore.instance.collection('events').where('College Name', isEqualTo:myCollege).orderBy('_timeStampUTC', descending: true).snapshots():
-        (('category' != category)?Firestore.instance.collection('events').where('Category', isEqualTo:category).orderBy('_timeStampUTC', descending: true).snapshots():
-        Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots()))),
+        initialData: null,
+        stream:(('category' != category && 'college'!= myCollege)?
+        (Firestore.instance.collection('events').where('Category', isEqualTo:category).where('College Name', isEqualTo:myCollege).
+        orderBy('_timeStampUTC', descending: true).snapshots()):
+        (('category' != category )?(Firestore.instance.collection('events').where('Category', isEqualTo:category).
+        orderBy('_timeStampUTC', descending: true).snapshots()):
+        (('college' != myCollege )?(Firestore.instance.collection('events').where('College Name', isEqualTo:myCollege).
+        orderBy('_timeStampUTC', descending: true).snapshots()):
+        ((Firestore.instance.collection('events').orderBy('_timeStampUTC', descending: true).snapshots()))))),
         builder: (context, snapshot){
-          //if(snapshot.hasData){
+          AsyncSnapshot <dynamic> temp = snapshot;
+          if(snapshot.hasData){
+            if(snapshot == null)setState(() { });
             return Expanded(
                           child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: snapshot.data.documents.length,
+                itemCount: temp.data.documents.length,
                 itemBuilder: (context, index){
-                  DocumentSnapshot documentSnapshot = snapshot.data.documents[index];
+                  DocumentSnapshot documentSnapshot = temp.data.documents[index];
+                  snapshot = null;
                   if(documentSnapshot['Date'].toDate().compareTo(documentSnapshot['DeleteDate'].toDate()) <= 0)Firestore.instance.collection('events').document(documentSnapshot.documentID).delete();
                   return Card(
                     //color: Colors.black26,
@@ -155,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Row(
                                   children: <Widget>[
                                     Text(
-                                      'Date:',
+                                      'Date: ',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
@@ -174,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Row(
                                   children: <Widget>[
                                     Text(
-                                      'College:',
+                                      'College: ',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
@@ -215,8 +224,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 ),
             );
-          // }
-          // else{ print("im here");return Center(child: Text('Sorry! nothings here'),);}
+          }
+          else{snapshot=null;print("im here");return Center(child: Text('Sorry! nothings here'),);}
         },
       ),
             ],

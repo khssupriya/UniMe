@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:image_picker/image_picker.dart';
 
 class Post extends StatefulWidget {
   Post({Key key}) : super(key: key);
@@ -91,15 +89,11 @@ class _PostState extends State<Post> {
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         decoration: InputDecoration(
-          labelText: 'Short Description',
+          labelText: 'Description',
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.blue, width: 2.0),
           ),
         ),
-        validator: (String val) {
-          if(val.isEmpty)return "Description is required";
-          else return null;
-        },
         keyboardType: TextInputType.multiline,
         maxLines: 3,
         onSaved: (String val){
@@ -120,10 +114,6 @@ class _PostState extends State<Post> {
             borderSide: BorderSide(color: Colors.blue, width: 2.0),
           ),
         ),
-        validator: (String val) {
-              if(val.isEmpty)return "College Name is required";
-              else return null;
-        },
         keyboardType: TextInputType.text,
         onSaved: (String val){
           this.clgName = val;
@@ -164,6 +154,10 @@ class _PostState extends State<Post> {
             return currentValue;
           }
         },
+        validator: (DateTime val) {
+              if(val == null)return "Date of event is required";
+              else return null;
+        },
       ),
     );    
   }
@@ -200,6 +194,10 @@ class _PostState extends State<Post> {
             return currentValue;
           }
         },
+        validator: (DateTime val) {
+              if(val == null)return "Date of deletion is required";
+              else return null;
+        },
       ),
     );    
   }
@@ -215,10 +213,6 @@ class _PostState extends State<Post> {
             borderSide: BorderSide(color: Colors.blue, width: 2.0),
           ),
         ),
-        validator: (String val) {
-              if(val.isEmpty)return "URL is required";
-              else return null;
-        },
         keyboardType: TextInputType.url,
         onSaved: (String val){
           this.link = val;
@@ -278,7 +272,6 @@ class _PostState extends State<Post> {
           ),
         ),
         validator: (String val) {
-            if(val.isEmpty)return "Email is required";
             if (!RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?").hasMatch(val)) 
               return 'Please enter a valid Email Address';
             else return null;            
@@ -313,6 +306,8 @@ class _PostState extends State<Post> {
       ),
     );
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
