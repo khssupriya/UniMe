@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
     appBar: AppBar(
       centerTitle: true,
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.black,
       title:Image(image: AssetImage('assests/title.png'), width: 100,),
     ),
     body: Center(
@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               color: Colors.black,
               child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 DropdownButton( 
                   value: dropdownValueclg,

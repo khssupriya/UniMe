@@ -107,7 +107,7 @@ class _PostState extends State<Post> {
               if(val.isEmpty)return "Fee is required";
               else return null;
         },
-        keyboardType: TextInputType.text,
+        keyboardType: TextInputType.number,
         onSaved: (String val){
           this.fee = val;
         },

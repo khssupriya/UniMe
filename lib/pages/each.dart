@@ -93,19 +93,47 @@ class _EachState extends State<Each> {
               },
               child: Row(
               children: <Widget>[
-                Text(
-                  'Date & Time:',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 10.0,) ,
-                Text(
-                  DateFormat("dd-MM-yyy HH:mm").format(this.documentSnapshot['Date'].toDate(),).substring(0,16),
-                  style: TextStyle(
-                    fontSize: 20.0,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Date :',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          DateFormat("dd-MM-yyy HH:mm").format(this.documentSnapshot['Date'].toDate(),).substring(0,10),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                   // SizedBox(height: 2,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Time :',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          DateFormat("dd-MM-yyy HH:mm").format(this.documentSnapshot['Date'].toDate(),).substring(10,16),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 Spacer(),
                 RaisedButton(
