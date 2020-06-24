@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Each extends StatefulWidget {
   Each({Key key, this.documentSnapshot}) : super(key: key);
@@ -18,6 +19,26 @@ class _EachState extends State<Each> {
   _EachState({this.documentSnapshot});
 
   DocumentSnapshot documentSnapshot;  
+
+   Future<Widget> _getImage(String name) async{
+     print(name);
+     final ref = FirebaseStorage.instance.ref().child(name);
+      var url = await ref.getDownloadURL();
+      return Image.network(url);
+   }
+
+  Widget _displayImage(String name){
+    return FutureBuilder(
+      future: _getImage(name),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot!= null)
+          return snapshot.data;
+        if (snapshot.connectionState == ConnectionState.waiting && snapshot!= null)
+          return CircularProgressIndicator();
+        return Container(child:Text('No poster available :('),);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +199,7 @@ class _EachState extends State<Each> {
             ),
           ),
           SizedBox(height: 20,),
+         (documentSnapshot['Has Poster'] == 1)? _displayImage(DateFormat('yyyy-MM-dd hh:mm').format(documentSnapshot['_timeStampUTC'].toDate())):Center(child: Text('no poster :('),),
         ],
     ),
         ),

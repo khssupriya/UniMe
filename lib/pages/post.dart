@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+//import 'package:path/path.dart';
 
 class Post extends StatefulWidget {
   Post({Key key}) : super(key: key);
@@ -12,26 +16,77 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
-  String title, shortDes, clgName, link, email, phone, category, fee;
-  DateTime datetm,  deleteDate;
+  String title, shortDes;
+  String clgName="unknown", link, email, phone, category="college", fee;
+  int hasPoster=0;
+  DateTime datetm,  deleteDate, utcTimeStamp;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+   File _image;
+   Future getImage() async {
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery,);
+      setState(() {
+        _image = image;
+          print('Image Path $_image');
+      });
+    }
+    Future uploadPic(BuildContext context) async{
+      utcTimeStamp = DateTime.now();
+      String fileName = DateFormat('yyyy-MM-dd hh:mm').format(utcTimeStamp);
+      StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
+      StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
+      StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
+      setState(() {
+        this.hasPoster = 1;
+        print("Profile Picture uploaded");
+      });
+    }
+    Widget _buildImage(context){
+      return Padding(
+        padding: EdgeInsets.all(8),
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 180.0,
+              child: (_image!=null)?Image.file(_image,fit: BoxFit.fill,):
+              Image.network(
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcT93bJ52wkX7uUjX4BTsWdJa1vKA9rRqEznQg&usqp=CAU&auto=format&fit=crop&w=500&q=60",
+                fit: BoxFit.fill,
+              ),
+            ),
+            Spacer(),
+            FlatButton(
+               color: Colors.redAccent,
+               child:Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: Text('Upload\n poster',style: TextStyle(color: Colors.white,),),
+               ),
+               onPressed: () {
+                 getImage();
+               },
+             ),
+          ],
+        ),
+      );
+    }
 
   void createData(){
 
     Firestore.instance.collection("events").add({
       'Title': this.title,
-      'Short Description': this.shortDes,
-      'College Name': this.clgName,
+      'Short Description': (this.shortDes.length>0)?this.shortDes:"The author has not provided any description",
+      'College Name': (this.clgName.length>0)?this.clgName:"unknown",
       'Date': this.datetm,
       'Link': this.link,
       'Category': this.category,
       'Email Address': this.email,
       'Phone Number': this.phone,
-      '_timeStampUTC': DateTime.now(),
+      '_timeStampUTC': (utcTimeStamp!=null)?utcTimeStamp:DateTime.now(),
       'Fee': this.fee,
       'DeleteDate': this.deleteDate,
+      'Has Poster': this.hasPoster,
     }).whenComplete((){
       print("$title created");
     });
@@ -272,6 +327,7 @@ class _PostState extends State<Post> {
           ),
         ),
         validator: (String val) {
+            if(val.isEmpty)return null;
             if (!RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?").hasMatch(val)) 
               return 'Please enter a valid Email Address';
             else return null;            
@@ -311,6 +367,7 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
        key: _scaffoldKey,  
        appBar: AppBar(
@@ -344,13 +401,18 @@ class _PostState extends State<Post> {
                       _buildLink(),
                       _buildEmail(),
                       _buildPhone(),
+                      _buildImage(context),
                       SizedBox(height: 5,),
                       _buildCategory(),
                       SizedBox(height: 80,),
                       RaisedButton(
                         onPressed: (){
                           if (!_formKey.currentState.validate())return;
-                          _formKey.currentState.save();                       
+                          _formKey.currentState.save();      
+                          if(_image != null){
+                            this.hasPoster = 1;
+                          uploadPic(context);   
+                          }              
                           createData();
                           final snackBar = SnackBar(content: Text('Sucessful Post!'));
                           _scaffoldKey.currentState.showSnackBar(snackBar);    
