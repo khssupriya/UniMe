@@ -17,7 +17,7 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
 
   String title, shortDes;
-  String clgName="unknown", link, email, phone, category="college", fee;
+  String clgName="unknown", link, email, phone, category, fee;
   int hasPoster=0;
   DateTime datetm,  deleteDate, utcTimeStamp;
 
